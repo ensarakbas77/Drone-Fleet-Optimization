@@ -8,6 +8,8 @@ print("Genetik algoritma başlatıldı.")
 # Rastgele 1 drone ve 5 teslimat üret
 drones = generate_random_drones(1)
 deliveries = generate_random_deliveries(5)
+nofly_zones = generate_random_nofly_zones(1)
+
 
 drone = drones[0]
 
