@@ -2,6 +2,11 @@ import random
 from typing import List, Tuple
 from datetime import datetime, timedelta
 
+"""
+Drone/DeliveryPoint/NoFlyZone Class' ları gerekli veri yapılarını tanımlar.
+TODO: Veri üreteci: rastgele drone/teslimat/no-fly zone oluşturma için kullanılır.
+"""
+
 class Drone:
     def __init__(self, id: int, max_weight: float, battery: int, speed: float, start_pos: Tuple[float, float]):
         self.id = id
