@@ -25,4 +25,4 @@ for drone_id, delivery_ids in best_solution.items():
 print(f"📊 En iyi skor: {best_score}")
 
 # GA sonrası:
-plot_delivery_routes(drones, deliveries, best_solution)
+plot_delivery_routes(drones, deliveries, best_solution, noflyzones)
