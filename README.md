@@ -25,7 +25,7 @@ Bu proje, Yazılım Geliştirme Lab II dersi kapsamında geliştirilmiştir. Ama
 ## ⚙️ Kurulum <br>
 
 1. Depoyu klonlayın: <br>
-`git clone https://github.com/ensarakbas77/Drone-Fleet-Optimization.git`
+`git clone https://github.com/ensarakbas77/Drone-Fleet-Optimization.git` <br>
 `cd Drone-Fleet-Optimization`
 
 2. Gerekli Python kütüphanelerini yükleyin: <br>
