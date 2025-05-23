@@ -12,8 +12,11 @@ def check_battery(drone, path, graph):
         from_id = path[i]
         to_id = path[i+1]
         neighbors = dict(graph[from_id])
-        total_cost += neighbors[to_id]
-    return total_cost <= drone['battery']  # batarya maliyeti karşılıyor mu?
+        if to_id not in neighbors:
+            return False  # bağlantı yoksa geçersiz
+        edge = neighbors[to_id]
+        total_cost += edge['distance'] * (1 + edge['weight'])  # maliyet hesapla
+    return total_cost <= drone['battery'] # batarya maliyeti karşılıyor mu?
 
 # 🔹 2. Ağırlık kontrolü: drone paketi taşıyabilir mi?
 def check_weight(drone, delivery):
