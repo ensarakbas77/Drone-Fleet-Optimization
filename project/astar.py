@@ -1,5 +1,3 @@
-# project/astar.py
-
 import heapq
 import math
 

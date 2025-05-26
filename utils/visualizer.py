@@ -62,18 +62,10 @@ def plot_delivery_routes(drones, delivery_points, paths, noflyzones=None, save_a
                      f"Toplam: {round(total_distance, 1)}", color=color, fontsize=8)
 
     # 4. Ayarlar
-    plt.title("Drone Teslimat Rotaları (Sıra + Mesafe)", fontsize=14)
+    plt.title("Drone Teslimat Rotaları", fontsize=14)
     plt.xlabel("X")
     plt.ylabel("Y")
     plt.grid(True, linestyle='--', alpha=0.4)
     plt.legend(loc="upper left")
     plt.tight_layout(pad=2.0)
-
-    # 5. Görseli kaydet
-    if save_as_image:
-        os.makedirs("outputs", exist_ok=True)
-        filepath = f"outputs/rota_{np.random.randint(1000)}.png"
-        plt.savefig(filepath, dpi=500)
-        print(f"📸 Harita kaydedildi: {filepath}")
-
     plt.show()
