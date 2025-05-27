@@ -1,26 +1,27 @@
 import heapq
 import math
+from shapely.geometry import LineString, Polygon  # 🔹 Eklendi
 
-# İki nokta arası düz mesafe (öklidyen)
+# Öklidyen mesafe
 def euclidean(p1, p2):
     return math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
 
-# Mesafe, ağırlık ve önceliğe göre maliyet hesaplar
+# Maliyet fonksiyonu: mesafe, ağırlık ve teslimat önceliği
 def calculate_cost(distance, weight, priority):
     base_cost = distance * (1 + weight)
-    priority_penalty = (6 - priority) * 100  # 5 öncelik = düşük ceza
+    priority_penalty = (6 - priority) * 100  # öncelik 5 → az ceza
     return base_cost + priority_penalty
 
-# Başlangıç-bitiş arasındaki geçiş no-fly zone içinden geçiyor mu?
+# 🔍 Gelişmiş no-fly zone kontrolü (shapely ile çizgi-çokgen kesişimi)
 def intersects_no_fly_zone(start, end, zones):
+    path_line = LineString([start, end])
     for zone in zones:
-        for corner in zone['coordinates']:
-            if min(start[0], end[0]) <= corner[0] <= max(start[0], end[0]) and \
-               min(start[1], end[1]) <= corner[1] <= max(start[1], end[1]):
-                return True
+        polygon = Polygon(zone['coordinates'])
+        if path_line.intersects(polygon):
+            return True
     return False
 
-# Proje isterlerine uygun geliştirilmiş A* algoritması
+# A* algoritması
 def astar(graph, start_id, goal_id, node_positions, drone, no_fly_zones=[]):
     max_weight = drone["max_weight"]
     battery = drone["battery"]
@@ -40,7 +41,6 @@ def astar(graph, start_id, goal_id, node_positions, drone, no_fly_zones=[]):
         _, current, remaining_battery = heapq.heappop(open_set)
 
         if current == goal_id:
-            # Yol oluşturuluyor
             path = []
             while current in came_from:
                 path.append(current)
@@ -54,17 +54,15 @@ def astar(graph, start_id, goal_id, node_positions, drone, no_fly_zones=[]):
             weight = info["weight"]
             priority = info["priority"]
 
-            # Ağırlık kontrolü (drone kapasitesini aşarsa geçme)
             if weight > max_weight:
                 continue
 
             cost = calculate_cost(distance, weight, priority)
 
-            # No-fly zone kontrolü
+            # Gelişmiş no-fly zone kontrolü
             if intersects_no_fly_zone(node_positions[current], node_positions[neighbor], no_fly_zones):
-                cost += 9999  # ağır ceza
+                cost += 9999
 
-            # Batarya yetmiyorsa geçme
             if cost > remaining_battery:
                 continue
 
@@ -73,46 +71,13 @@ def astar(graph, start_id, goal_id, node_positions, drone, no_fly_zones=[]):
             if tentative_g < g_score[neighbor]:
                 came_from[neighbor] = current
                 g_score[neighbor] = tentative_g
+
                 heuristic = euclidean(node_positions[neighbor], node_positions[goal_id])
+
+                if intersects_no_fly_zone(node_positions[neighbor], node_positions[goal_id], no_fly_zones):
+                    heuristic += 9999
+
                 f_score[neighbor] = tentative_g + heuristic
                 heapq.heappush(open_set, (f_score[neighbor], neighbor, remaining_battery - cost))
 
-    return None, float("inf")  # geçerli yol yoksa
-
-
-# Test için örnek kod
-if __name__ == "__main__":
-    # Örnek graf (kenar: mesafe, ağırlık, öncelik)
-    graph = {
-        0: [(1, {"distance": 5, "weight": 2.0, "priority": 4}),
-            (2, {"distance": 10, "weight": 3.5, "priority": 2})],
-        1: [(2, {"distance": 3, "weight": 1.0, "priority": 5}),
-            (3, {"distance": 8, "weight": 2.5, "priority": 3})],
-        2: [(3, {"distance": 1, "weight": 1.2, "priority": 5})],
-        3: []
-    }
-
-    # Düğüm konumları
-    positions = {
-        0: (0, 0),
-        1: (1, 1),
-        2: (2, 2),
-        3: (3, 3)
-    }
-
-    # No-fly zone örneği
-    no_fly_zones = [
-        {"id": 1, "coordinates": [(2, 2), (2.5, 2.5)]}
-    ]
-
-    # Drone özellikleri
-    drone = {
-        "id": 1,
-        "start_pos": (0, 0),
-        "max_weight": 5.0,
-        "battery": 1000
-    }
-
-    path, cost = astar(graph, 0, 3, positions, drone, no_fly_zones)
-    print("🚁 En iyi rota:", path)
-    print("🔋 Toplam maliyet:", round(cost, 2))
+    return None, float("inf")

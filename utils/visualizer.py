@@ -1,67 +1,69 @@
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import matplotlib.cm as cm
-import numpy as np
-import os
 import math
 
 def euclidean(p1, p2):
-    return math.sqrt((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2)
+    return math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
 
-def plot_delivery_routes(drones, delivery_points, paths, noflyzones=None, save_as_image=True):
-    plt.figure(figsize=(14, 12))  # daha geniş çizim alanı
+def plot_delivery_routes(drones, deliveries, paths, noflyzones=None):
+    plt.figure(figsize=(14, 12))
     ax = plt.gca()
 
-    # 1. Tüm teslimat noktalarını çiz (mavi daire + ID)
-    for dp in delivery_points:
-        x, y = dp["pos"]
-        plt.plot(x, y, 'o', color='deepskyblue', markersize=7, zorder=3)
-        plt.text(x + 1.2, y + 1.2, str(dp["id"]), fontsize=8, color='black')
+    all_assigned_ids = set()
+    for dlist in paths.values():
+        all_assigned_ids.update(dlist)
 
-    # 2. No-Fly Zones (şeffaf salmon renkli çokgen)
+    # 1️⃣ Teslimat noktaları
+    for dp in deliveries:
+        x, y = dp["pos"]
+        if dp["id"] in all_assigned_ids:
+            plt.plot(x, y, 'o', color='deepskyblue', markersize=7, zorder=3)
+        else:
+            plt.plot(x, y, 'x', color='gray', markersize=8, zorder=3)
+            plt.text(x + 1.5, y + 1.5, f"{dp['id']} (atanmadı)", fontsize=7, color='gray')
+            continue
+        plt.text(x + 1.0, y + 1.0, f"{dp['id']}", fontsize=8, color='black')
+
+    # 2️⃣ No-fly zones
     if noflyzones:
         for zone in noflyzones:
-            poly = Polygon(zone['coordinates'], closed=True, color='salmon', alpha=0.2, zorder=1)
+            poly = Polygon(zone['coordinates'], closed=True, color='salmon', alpha=0.25, zorder=1)
             ax.add_patch(poly)
 
-    # 3. Her drone için rota çizimi
+    # 3️⃣ Drone rotaları
     color_map = cm.get_cmap('tab10')
     for i, drone in enumerate(drones):
         drone_id = drone['id']
-        start = drone['start_pos']
-        assigned_ids = paths.get(drone_id, [])
         color = color_map(i % 10)
+        assigned_ids = paths.get(drone_id, [])
+        start = drone['start_pos']
 
-        # Başlangıç noktası
-        plt.plot(start[0], start[1], marker='s', markersize=9, color=color, label=f"Drone {drone_id}", zorder=4)
+        # Başlangıç karesi
+        plt.plot(start[0], start[1], marker='s', markersize=10, color=color, label=f"Drone {drone_id}", zorder=4)
 
-        # Teslimat noktaları
-        route = [start] + [dp["pos"] for dp in delivery_points if dp["id"] in assigned_ids]
-        id_route = [None] + [dp["id"] for dp in delivery_points if dp["id"] in assigned_ids]
+        # Rota oluştur
+        route = [start]
+        for deliv_id in assigned_ids:
+            delivery = next(d for d in deliveries if d["id"] == deliv_id)
+            route.append(delivery["pos"])
 
+        # Rota çizimi
         total_distance = 0
-
         for j in range(len(route) - 1):
             x1, y1 = route[j]
             x2, y2 = route[j+1]
             seg_distance = euclidean((x1, y1), (x2, y2))
             total_distance += seg_distance
+            plt.plot([x1, x2], [y1, y2], color=color, linewidth=2.5, alpha=0.85, zorder=2)
 
-            plt.plot([x1, x2], [y1, y2], color=color, linewidth=2, alpha=0.9, zorder=2)
-
-            dx = x2 - x1
-            dy = y2 - y1
-            plt.arrow(x1 + dx/2, y1 + dy/2, dx * 0.01, dy * 0.01,
-                      head_width=1.3, head_length=2.0, fc=color, ec=color, zorder=5)
-
-            if j + 1 < len(id_route) and id_route[j+1] is not None:
-                plt.text(x2 + 1.5, y2 + 1.5, f"{id_route[j+1]} ({j})", fontsize=7, color=color)
-
+        # Toplam mesafe etiketi
         if len(route) > 1:
-            plt.text(route[-1][0] + 2, route[-1][1] + 2,
-                     f"Toplam: {round(total_distance, 1)}", color=color, fontsize=8)
+            x_end, y_end = route[-1]
+            plt.text(x_end + 2, y_end + 2,
+                     f"Toplam: {round(total_distance, 1)}", fontsize=8, color=color)
 
-    # 4. Ayarlar
+    # 4️⃣ Grafik ayarları
     plt.title("Drone Teslimat Rotaları", fontsize=14)
     plt.xlabel("X")
     plt.ylabel("Y")

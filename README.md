@@ -7,6 +7,7 @@ Bu proje, Yazılım Geliştirme Lab II dersi kapsamında geliştirilmiştir. Ama
 - 📦 Teslimat noktalarını ve drone özelliklerini baz alan dinamik rota planlaması <br>
 - ❌ Uçuşa yasak bölgeleri tanıma ve zaman pencerelerine göre değerlendirme <br>
 - 📈 A* algoritması ile rota bulma <br>
+- 🔋 CSP ile batarya, ağırlık ve zaman kısıtları kontrolü
 - 🔒 CSP (Constraint Satisfaction Problem) ile kısıt yönetimi <br>
 - 🧬 Genetik algoritma ile çoklu drone optimizasyonu <br>
 - 📊 Matplotlib ile rota görselleştirmesi <br> 
