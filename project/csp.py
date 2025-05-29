@@ -40,7 +40,7 @@ def check_nofly_zones(path_coords, noflyzones, arrival_time_str):
         z_start, z_end = map(lambda t: datetime.strptime(t, fmt), zone['active_time'])
         if z_start <= arrival <= z_end:
             if intersects_zone(path_coords, zone['coordinates']):
-                return False  # yasak bölgeye giriyor
+                return False  # yasak bölgeye giriyor teslimat geçersiz 
     return True
 
 # Basit poligon içi kontrol fonksiyonu (yaklaşık)
@@ -109,4 +109,4 @@ if __name__ == "__main__":
             print("❌ Teslimat zaman aralığı dışında.")
         if not valid_flight:
             print("❌ Rota no-fly zone içinden geçiyor.")
-        
+
