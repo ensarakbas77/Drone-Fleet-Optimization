@@ -1,6 +1,11 @@
 import heapq
 import math
-from shapely.geometry import LineString, Polygon  # 🔹 Eklendi
+from shapely.geometry import LineString, Polygon
+from utils.constants import (
+    PENALTY_NOFLY_ZONE,
+    PRIORITY_PENALTY_MULTIPLIER,
+    MAX_PRIORITY_VALUE
+)
 
 # Öklidyen mesafe
 def euclidean(p1, p2):
@@ -9,7 +14,7 @@ def euclidean(p1, p2):
 # Maliyet fonksiyonu: mesafe, ağırlık ve teslimat önceliği
 def calculate_cost(distance, weight, priority):
     base_cost = distance * (1 + weight)
-    priority_penalty = (6 - priority) * 100  # öncelik 5 → az ceza
+    priority_penalty = (MAX_PRIORITY_VALUE + 1 - priority) * PRIORITY_PENALTY_MULTIPLIER
     return base_cost + priority_penalty
 
 # 🔍 Gelişmiş no-fly zone kontrolü (shapely ile çizgi-çokgen kesişimi)
@@ -54,14 +59,14 @@ def astar(graph, start_id, goal_id, node_positions, drone, no_fly_zones=[]):
             weight = info["weight"]
             priority = info["priority"]
 
+            # Kapasite aşımında eleme
             if weight > max_weight:
                 continue
 
             cost = calculate_cost(distance, weight, priority)
 
-            # Gelişmiş no-fly zone kontrolü
             if intersects_no_fly_zone(node_positions[current], node_positions[neighbor], no_fly_zones):
-                cost += 9999
+                cost += PENALTY_NOFLY_ZONE
 
             if cost > remaining_battery:
                 continue
@@ -75,7 +80,7 @@ def astar(graph, start_id, goal_id, node_positions, drone, no_fly_zones=[]):
                 heuristic = euclidean(node_positions[neighbor], node_positions[goal_id])
 
                 if intersects_no_fly_zone(node_positions[neighbor], node_positions[goal_id], no_fly_zones):
-                    heuristic += 9999
+                    heuristic += PENALTY_NOFLY_ZONE
 
                 f_score[neighbor] = tentative_g + heuristic
                 heapq.heappush(open_set, (f_score[neighbor], neighbor, remaining_battery - cost))
