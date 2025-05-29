@@ -102,7 +102,7 @@ def evaluate(individual, drones, deliveries, graph, positions, noflyzones):
                 total_score -= 50
                 penalty_count += 1
 
-    fitness = (valid_count * 100) - (energy_cost * 2) - (penalty_count * 50)
+    fitness = (valid_count * 50) - (energy_cost * 0.1) - (penalty_count * 1000)
     return fitness
 
 

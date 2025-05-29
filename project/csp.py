@@ -109,4 +109,4 @@ if __name__ == "__main__":
             print("❌ Teslimat zaman aralığı dışında.")
         if not valid_flight:
             print("❌ Rota no-fly zone içinden geçiyor.")
-
+        

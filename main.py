@@ -1,6 +1,6 @@
 from utils.data_loader import load_json_lines
 from project.graph_builder import build_graph
-from tools.genetic_algorithm import run_ga
+from project.genetic_algorithm import run_ga
 from tools.metrics import (
     measure_runtime,
     calculate_delivery_completion,
@@ -40,7 +40,6 @@ def main():
         print(f"  Drone {drone_id} → Teslimatlar: {delivery_ids}")
     print(f"\n📊 En iyi skor: {round(best_score, 2)}")
     print(f"⏱️ GA çalışma süresi: {duration:.2f} saniye")
-
     # 7. Performans metrikleri
     completion_rate = calculate_delivery_completion(best_solution, len(deliveries))
     avg_energy = estimate_energy(best_solution, drones, deliveries)
