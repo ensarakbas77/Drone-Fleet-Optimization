@@ -2,12 +2,21 @@ import random
 import math
 from project.csp import check_battery, check_weight, check_nofly_zones, check_time_window
 from project.astar import astar
+from utils.constants import (
+    MAX_DELIVERIES_PER_DRONE,
+    PENALTY_NO_ROUTE,
+    MUTATION_RATE,
+    CHARGE_TIME_HOURS,
+    FITNESS_DELIVERY_REWARD,
+    FITNESS_ENERGY_PENALTY,
+    FITNESS_VIOLATION_PENALTY,
+)
 
 # 🚀 Öklidyen mesafe
 def euclidean(p1, p2):
     return math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
 
-# 1️⃣ Popülasyonu başlat (her teslimat sadece 1 drone’a atanır)
+# 1️⃣ Popülasyonu başlat
 def initialize_population(drones, deliveries, pop_size):
     population = []
     for _ in range(pop_size):
@@ -22,12 +31,12 @@ def initialize_population(drones, deliveries, pop_size):
             random.shuffle(drone_ids)
 
             for drone_id in drone_ids:
-                if len(individual[drone_id]) < 3:  # drone başına max 3 teslimat
+                if len(individual[drone_id]) < MAX_DELIVERIES_PER_DRONE:
                     individual[drone_id].append(delivery['id'])
                     assigned = True
                     break
             if not assigned:
-                continue  # bu teslimat yer bulamazsa atlanır
+                continue
 
         population.append(individual)
     return population
@@ -45,11 +54,15 @@ def evaluate(individual, drones, deliveries, graph, positions, noflyzones):
         current_pos = drone['start_pos']
         battery = drone['battery']
         speed = drone['speed']
-        current_time = 13.00  # örnek başlangıç saati
+        current_time = 13.00
 
-        # 📌 Teslimatları öncelik puanına göre sırala (yüksek öncelik önce)
-        delivery_ids = sorted(delivery_ids, key=lambda d_id: next(d['priority'] for d in deliveries if d['id'] == d_id), reverse=True)
+        delivery_ids = sorted(
+            delivery_ids,
+            key=lambda d_id: next(d['priority'] for d in deliveries if d['id'] == d_id),
+            reverse=True
+        )
 
+        #Teslimat yalnızca bir kez bir drone tarafından alınır.
         for deliv_id in delivery_ids:
             if deliv_id in visited_deliveries:
                 continue
@@ -70,13 +83,12 @@ def evaluate(individual, drones, deliveries, graph, positions, noflyzones):
             path, cost = astar(temp_graph, 0, 1, temp_positions, drone, noflyzones)
 
             if not path:
-                total_score -= 50
+                total_score -= PENALTY_NO_ROUTE
                 penalty_count += 1
                 continue
 
-            # 🧠 Şarj yetmiyorsa önce şarj ol
             if battery < cost:
-                current_time += 1.0  # 1 saat şarj süresi
+                current_time += CHARGE_TIME_HOURS
                 battery = drone['battery']
 
             arrival_time = current_time + (cost / speed)
@@ -99,14 +111,16 @@ def evaluate(individual, drones, deliveries, graph, positions, noflyzones):
                 battery -= cost
                 current_time = arrival_time
             else:
-                total_score -= 50
+                total_score -= PENALTY_NO_ROUTE
                 penalty_count += 1
 
-    fitness = (valid_count * 50) - (energy_cost * 0.1) - (penalty_count * 1000)
+    fitness = (valid_count * FITNESS_DELIVERY_REWARD) \
+        - (energy_cost * FITNESS_ENERGY_PENALTY) \
+        - (penalty_count * FITNESS_VIOLATION_PENALTY)
+
     return fitness
 
-
-# 3️⃣ En iyi bireyleri seç
+# 3️⃣ Seçim
 def selection(population, scores, num_parents):
     paired = list(zip(scores, population))
     paired.sort(reverse=True, key=lambda x: x[0])
@@ -117,11 +131,10 @@ def crossover(p1, p2):
     child = {}
     all_assigned = set()
     for drone_id in p1:
-        # İki ebeveynden alınabilecek geçerli teslimatlar
         choices = [lst for lst in [p1[drone_id], p2[drone_id]] if lst]
         selected = random.choice(choices) if choices else []
         filtered = [d for d in selected if d not in all_assigned]
-        child[drone_id] = filtered[:3]
+        child[drone_id] = filtered[:MAX_DELIVERIES_PER_DRONE]
         all_assigned.update(filtered)
     return child
 
@@ -133,14 +146,14 @@ def mutate(individual, deliveries):
     remaining = list(all_deliv_ids - used_ids)
 
     if not remaining:
-        return new_individual  # ekleyecek bir şey yok
+        return new_individual
 
     drone_id = random.choice(list(new_individual.keys()))
     new_id = random.choice(remaining)
-    if len(new_individual[drone_id]) < 3:
+    if len(new_individual[drone_id]) < MAX_DELIVERIES_PER_DRONE:
         new_individual[drone_id].append(new_id)
     else:
-        replace_idx = random.randint(0, 2)
+        replace_idx = random.randint(0, MAX_DELIVERIES_PER_DRONE - 1)
         new_individual[drone_id][replace_idx] = new_id
     return new_individual
 
@@ -156,7 +169,7 @@ def run_ga(drones, deliveries, graph, positions, noflyzones, gen=10, pop_size=10
 
         while len(new_population) < pop_size:
             child = crossover(random.choice(parents), random.choice(parents))
-            if random.random() < 0.3:
+            if random.random() < MUTATION_RATE:
                 child = mutate(child, deliveries)
             new_population.append(child)
 
