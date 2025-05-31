@@ -17,9 +17,13 @@ def main():
     print(f"\n🚀 Drone Teslimat Planlayıcı başlatıldı → {senaryo}")
 
     # 1. Verileri yükle
-    drones = load_json_lines(f"data/drones_{senaryo}.txt")
-    deliveries = load_json_lines(f"data/deliveries_{senaryo}.txt")
-    noflyzones = load_json_lines(f"data/noflyzones_{senaryo}.txt")
+    # drones = load_json_lines(f"data/drones_{senaryo}.txt")
+    # deliveries = load_json_lines(f"data/deliveries_{senaryo}.txt")
+    # noflyzones = load_json_lines(f"data/noflyzones_{senaryo}.txt")
+
+    drones = load_json_lines(f"data/veriseti_drone/drones_{senaryo}.txt")
+    deliveries = load_json_lines(f"data/veriseti_drone/deliveries_{senaryo}.txt")
+    noflyzones = load_json_lines(f"data/veriseti_drone/noflyzones_{senaryo}.txt")
 
     # 2. Pozisyonlar
     positions = {d["id"]: d["pos"] for d in deliveries}
