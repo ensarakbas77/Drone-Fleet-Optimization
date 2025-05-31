@@ -13,7 +13,7 @@ from utils.visualizer import plot_delivery_routes
 
 
 def main():
-    senaryo = "senaryo1"  # "senaryo2" ile değiştirilebilir
+    senaryo = "veriseti"  # "senaryo2" ile değiştirilebilir
     print(f"\n🚀 Drone Teslimat Planlayıcı başlatıldı → {senaryo}")
 
     # 1. Verileri yükle
