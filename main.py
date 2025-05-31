@@ -63,16 +63,19 @@ def main():
     # 10. A* karşılaştırması
     print("\n🔎 A* Algoritması ile Karşılaştırma")
     # Not: A* sadece ilk → son teslimat noktasına rota arar (global çözüm değildir)
-    drone = drones[0]
+
+    start_id = deliveries[0]["id"]
+    goal_id = deliveries[-1]["id"]
 
     path, cost = astar(
         graph=graph,
-        start_id=0,
-        goal_id=len(deliveries) - 1,
+        start_id=start_id,
+        goal_id=goal_id,
         node_positions=positions,
-        drone=drone,
+        drone=drones[0],
         no_fly_zones=noflyzones,
-    )
+)
+
 
     if path:
         print(f"📍 A* Rota: {path}")
