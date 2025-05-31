@@ -2,11 +2,11 @@ import math
 from datetime import datetime
 from datetime import datetime, timedelta
 
-# 🔹 Yardımcı: Euclidean mesafe
+# Yardımcı: Euclidean mesafe
 def euclidean(p1, p2):
     return math.sqrt((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2)
 
-# 🔹 1. Batarya kontrolü: drone bataryası bu rotayı uçmaya yeter mi?
+# 1. Batarya kontrolü: drone bataryası bu rotayı uçmaya yeter mi?
 def check_battery(drone, path, graph):
     total_cost = 0
     for i in range(len(path) - 1):
@@ -14,27 +14,26 @@ def check_battery(drone, path, graph):
         to_id = path[i+1]
         neighbors = dict(graph[from_id])
         if to_id not in neighbors:
-            return False  # bağlantı yoksa geçersiz
+            return False  
         edge = neighbors[to_id]
-        total_cost += edge['distance'] * (1 + edge['weight'])  # maliyet hesapla
-    return total_cost <= drone['battery'] # batarya maliyeti karşılıyor mu?
+        total_cost += edge['distance'] * (1 + edge['weight'])  
+    return total_cost <= drone['battery']
 
-# 🔹 2. Ağırlık kontrolü: drone paketi taşıyabilir mi?
+#  2. Ağırlık kontrolü: drone paketi taşıyabilir mi?
 def check_weight(drone, delivery):
     return delivery['weight'] <= drone['max_weight']
 
-# 🔹 3. Zaman aralığı kontrolü: teslimat istenen saat aralığında mı?
+# 3. Zaman aralığı kontrolü: teslimat istenen saat aralığında mı?
 def check_time_window(delivery, arrival_time_str):
     fmt = "%H:%M"
     arrival = datetime.strptime(arrival_time_str, fmt)
 
     start_raw, end_raw = delivery['time_window']
 
-    # 🔹 Eğer zamanlar string ise doğrudan parse et
+    # Eğer zamanlar string ise doğrudan parse et
     if isinstance(start_raw, str) and isinstance(end_raw, str):
         start = datetime.strptime(start_raw, fmt)
         end = datetime.strptime(end_raw, fmt)
-    # 🔹 Eğer zamanlar int (dakika) ise, gün başlangıcına göre dakika ekle
     elif isinstance(start_raw, int) and isinstance(end_raw, int):
         start = datetime.combine(arrival.date(), datetime.min.time()) + timedelta(minutes=start_raw)
         end = datetime.combine(arrival.date(), datetime.min.time()) + timedelta(minutes=end_raw)
@@ -44,7 +43,7 @@ def check_time_window(delivery, arrival_time_str):
     return start <= arrival <= end
 
 
-# 🔹 4. No-Fly Zone kontrolü: rota aktif bir yasak alandan geçiyor mu?
+# 4. No-Fly Zone kontrolü: rota aktif bir yasak alandan geçiyor mu?
 def check_nofly_zones(path_coords, noflyzones, arrival_time_str):
     fmt = "%H:%M"
     arrival = datetime.strptime(arrival_time_str, fmt)
@@ -52,11 +51,11 @@ def check_nofly_zones(path_coords, noflyzones, arrival_time_str):
     for zone in noflyzones:
         z_start_raw, z_end_raw = zone['active_time']
 
-        # 🔹 Eğer zamanlar string ise doğrudan parse et
+        # Eğer zamanlar string ise doğrudan parse et
         if isinstance(z_start_raw, str) and isinstance(z_end_raw, str):
             z_start = datetime.strptime(z_start_raw, fmt)
             z_end = datetime.strptime(z_end_raw, fmt)
-        # 🔹 Eğer zamanlar int (dakika) ise, gün başlangıcına göre dakika ekle
+
         elif isinstance(z_start_raw, int) and isinstance(z_end_raw, int):
             z_start = datetime.combine(arrival.date(), datetime.min.time()) + timedelta(minutes=z_start_raw)
             z_end = datetime.combine(arrival.date(), datetime.min.time()) + timedelta(minutes=z_end_raw)
@@ -70,9 +69,6 @@ def check_nofly_zones(path_coords, noflyzones, arrival_time_str):
 
 # Basit poligon içi kontrol fonksiyonu (yaklaşık)
 def intersects_zone(path_coords, polygon_coords):
-    # Bu fonksiyon, path ile polygon'un kesişip kesişmediğini basitçe kontrol eder
-    # Gerçek projede daha detaylı "shapely" gibi kütüphanelerle yapılabilir.
-    # Burada sadece path'in ilk ve son noktası poligon içine düşüyor mu diye bakıyoruz.
     for point in path_coords:
         if point_inside_polygon(point, polygon_coords):
             return True
@@ -101,7 +97,12 @@ if __name__ == "__main__":
 
     drone = {'id': 0, 'max_weight': 5.0, 'battery': 300}
     delivery = {'id': 1, 'pos': (10, 20), 'weight': 3.0, 'priority': 2, 'time_window': ['12:00', '14:00']}
-    graph = { 0: [(1, 150)] } 
+    graph = {
+    0: {
+        1: {'distance': 150, 'weight': 0.2}
+    },
+    }
+ 
     path = [0, 1]
     noflyzones = [
     {
@@ -115,7 +116,7 @@ if __name__ == "__main__":
 
 
     # Rota koordinatları
-    path_coords = [ (0, 0), (10, 20) ]  # örnek: drone start → teslimat noktası
+    path_coords = [ (0, 0), (10, 20) ]  
 
     valid_battery = check_battery(drone, path, graph)
     valid_weight = check_weight(drone, delivery)

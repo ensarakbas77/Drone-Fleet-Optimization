@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt  # 🔹 GA grafiği için eklendi
-
 from utils.data_loader import load_json_lines
 from project.graph_builder import build_graph
 from project.genetic_algorithm import run_ga
@@ -14,16 +12,12 @@ from utils.visualizer import plot_delivery_routes
 
 def main():
     senaryo = "veriseti"  # "senaryo2" ile değiştirilebilir
-    print(f"\n🚀 Drone Teslimat Planlayıcı başlatıldı → {senaryo}")
+    print(f"\nDrone Teslimat Planlayıcı başlatıldı → {senaryo}")
 
     # 1. Verileri yükle
-    # drones = load_json_lines(f"data/drones_{senaryo}.txt")
-    # deliveries = load_json_lines(f"data/deliveries_{senaryo}.txt")
-    # noflyzones = load_json_lines(f"data/noflyzones_{senaryo}.txt")
-
-    drones = load_json_lines(f"data/veriseti_drone/drones_{senaryo}.txt")
-    deliveries = load_json_lines(f"data/veriseti_drone/deliveries_{senaryo}.txt")
-    noflyzones = load_json_lines(f"data/veriseti_drone/noflyzones_{senaryo}.txt")
+    drones = load_json_lines(f"data/drones_{senaryo}.txt")
+    deliveries = load_json_lines(f"data/deliveries_{senaryo}.txt")
+    noflyzones = load_json_lines(f"data/noflyzones_{senaryo}.txt")
 
     # 2. Pozisyonlar
     positions = {d["id"]: d["pos"] for d in deliveries}
@@ -41,47 +35,25 @@ def main():
     )
 
     # 6. Sonuçları yazdır
-    print("\n🧬 En iyi plan:")
+    print("\nEn iyi plan:")
     for drone_id, delivery_ids in best_solution.items():
         print(f"  Drone {drone_id} → Teslimatlar: {delivery_ids}")
-    print(f"\n📊 En iyi skor: {round(best_score, 2)}")
-    print(f"⏱️ GA çalışma süresi: {duration:.2f} saniye")
+    print(f"\nEn iyi skor: {round(best_score, 2)}")
+    print(f"GA çalışma süresi: {duration:.2f} saniye")
 
     # 7. Performans metrikleri
     completion_rate = calculate_delivery_completion(best_solution, len(deliveries))
     avg_energy = estimate_energy(best_solution, drones, deliveries)
 
-    print(f"✅ Teslimat tamamlama oranı: %{completion_rate:.2f}")
-    print(f"🔋 Ortalama enerji tüketimi: {round(avg_energy, 2)} birim")
+    print(f"Teslimat tamamlama oranı: %{completion_rate:.2f}")
+    print(f"Ortalama enerji tüketimi: {round(avg_energy, 2)} birim")
 
     # 9. Görselleştirme
     try:
         plot_delivery_routes(drones, deliveries, best_solution, noflyzones)
     except:
-        print("📉 Görselleştirme yapılamadı (visualizer eksik olabilir).")
+        print("Görselleştirme yapılamadı (visualizer eksik olabilir).")
 
-    # 10. A* karşılaştırması
-    print("\n🔎 A* Algoritması ile Karşılaştırma")
-    # Not: A* sadece ilk → son teslimat noktasına rota arar (global çözüm değildir)
-
-    start_id = deliveries[0]["id"]
-    goal_id = deliveries[-1]["id"]
-
-    path, cost = astar(
-        graph=graph,
-        start_id=start_id,
-        goal_id=goal_id,
-        node_positions=positions,
-        drone=drones[0],
-        no_fly_zones=noflyzones,
-)
-
-
-    if path:
-        print(f"📍 A* Rota: {path}")
-        print(f"🔋 Toplam Maliyet: {round(cost, 2)}")
-    else:
-        print("❌ A* algoritması uygun rota bulamadı.")
 
 
 if __name__ == "__main__":

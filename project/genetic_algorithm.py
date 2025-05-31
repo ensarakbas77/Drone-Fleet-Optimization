@@ -177,7 +177,7 @@ def run_ga(drones, deliveries, graph, positions, noflyzones, gen=10, pop_size=10
         best = max(scores)
         avg = sum(scores) / len(scores)
         history.append(best)
-        print(f"🧬 Gen {i+1} | En iyi: {best} | Ortalama: {avg:.2f}")
+        print(f"Gen {i+1} | En iyi: {best} | Ortalama: {avg:.2f}")
 
     best_score = max(scores)
     best_index = scores.index(best_score)
