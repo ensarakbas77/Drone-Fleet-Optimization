@@ -9,6 +9,3 @@ def load_json_lines(file_path):
 drones = load_json_lines("data/drones_senaryo1.txt")
 no_fly_zone = load_json_lines("data/noflyzones_senaryo1.txt")
 deliveries = load_json_lines("data/deliveries_senaryo1.txt")
-
-
-

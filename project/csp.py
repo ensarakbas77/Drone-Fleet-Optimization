@@ -91,5 +91,3 @@ def point_inside_polygon(point, polygon):
                             inside = not inside
         px1, py1 = px2, py2
     return inside
-
-

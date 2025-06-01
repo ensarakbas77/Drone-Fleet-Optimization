@@ -42,7 +42,7 @@ def display_top_priority_deliveries(deliveries, drones=None, count=None):
         print(f"  Teslimat {delivery['id']} → Öncelik: {delivery['priority']}")
 
 def main():
-    senaryo = "senaryo1" #veriseti, senaryo2 ile değiştirilebilir.
+    senaryo = "veriseti" #veriseti, senaryo2 ile değiştirilebilir.
     print(f"\n🚀 Drone Teslimat Planlayıcı başlatıldı → {senaryo}")
 
     drones = load_json_lines(f"data/drones_{senaryo}.txt")
