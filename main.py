@@ -28,7 +28,7 @@ def calculate_total_distance(drone, delivery_ids, deliveries):
 
 
 def main():
-    senaryo = "senaryo1"  # "senaryo1" → kendi senaryon; "veriseti" → örnek veri
+    senaryo = "senaryo1" 
 
     print(f"\n🚀 Drone Teslimat Planlayıcı başlatıldı → {senaryo}")
 
@@ -82,32 +82,6 @@ def main():
         plot_delivery_routes(drones, deliveries, best_solution, noflyzones)
     except:
         print("Görselleştirme yapılamadı (visualizer eksik olabilir).")
-
-    # 🔹 10. A* karşılaştırması
-    print("\n🔎 A* Algoritması ile Karşılaştırma")
-    start_id = deliveries[0]["id"]
-    goal_id = deliveries[-1]["id"]
-
-    path, cost = astar(
-        graph=graph,
-        start_id=start_id,
-        goal_id=goal_id,
-        node_positions=positions,
-        drone=drones[0],
-        no_fly_zones=noflyzones,
-    )
-    plot_folium_map(drones, deliveries, best_solution, noflyzones)
-    # 9. Folium ile harita
-    try:
-        plot_routes_with_folium(drones, deliveries, best_solution, noflyzones)
-    except Exception as e:
-     print("🌐 Folium haritası oluşturulamadı:", e)
-
-    if path:
-        print(f"📍 A* Rota: {path}")
-        print(f"🔋 Toplam Maliyet: {round(cost, 2)}")
-    else:
-        print("❌ A* algoritması uygun rota bulamadı.")
 
 
 if __name__ == "__main__":
