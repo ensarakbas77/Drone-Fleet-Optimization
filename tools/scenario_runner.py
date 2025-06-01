@@ -31,6 +31,8 @@ def run_scenario():
     graph = build_graph(deliveries)
     positions = delivery_positions(deliveries)
 
+    current_time = "10:00"  # 🕒 Simülasyon zamanı burada tanımlanır
+
     for i, drone in enumerate(drones):
         print(f"\n🚁 Drone #{i+1}")
         path, cost = astar(
@@ -39,7 +41,8 @@ def run_scenario():
             goal_id=len(deliveries)-1,
             node_positions=positions,
             drone=vars(drone),
-            no_fly_zones=nofly_dict_list(nofly_zones)
+            no_fly_zones=nofly_dict_list(nofly_zones),
+            current_time=current_time  # 🆕 parametre burada geçildi
         )
 
         if path:
@@ -47,6 +50,7 @@ def run_scenario():
             print(f"🔋 Toplam Maliyet: {round(cost, 2)}")
         else:
             print("❌ Uygun rota bulunamadı.")
+
 
 if __name__ == "__main__":
     run_scenario()

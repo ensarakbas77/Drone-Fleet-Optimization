@@ -21,14 +21,3 @@ def build_graph(delivery_points):
             }
             graph[from_id].append((to_id, edge_info))
     return graph
-
-# Test için
-# if __name__ == "__main__":
-#     deliveries = [
-#         {"id": 0, "pos": (10, 20), "weight": 2.0, "priority": 3},
-#         {"id": 1, "pos": (15, 25), "weight": 1.5, "priority": 5},
-#         {"id": 2, "pos": (20, 30), "weight": 3.0, "priority": 1},
-#     ]
-#     graph = build_graph(deliveries)
-#     for k, v in graph.items():
-#         print(f"{k}: {v}")

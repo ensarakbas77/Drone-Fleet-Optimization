@@ -5,6 +5,7 @@ from utils.data_loader import load_json_lines
 from project.graph_builder import build_graph
 from project.genetic_algorithm import run_ga
 from project.astar import astar
+from random import randint
 from tools.metrics import (
     measure_runtime,
     calculate_delivery_completion,
@@ -41,7 +42,7 @@ def display_top_priority_deliveries(deliveries, drones=None, count=None):
         print(f"  Teslimat {delivery['id']} → Öncelik: {delivery['priority']}")
 
 def main():
-    senaryo = "senaryo2"
+    senaryo = "senaryo1" #veriseti, senaryo2 ile değiştirilebilir.
     print(f"\n🚀 Drone Teslimat Planlayıcı başlatıldı → {senaryo}")
 
     drones = load_json_lines(f"data/drones_{senaryo}.txt")
@@ -100,6 +101,7 @@ def main():
 
     start_id = deliveries[0]["id"]
     goal_id = deliveries[-1]["id"]
+    current_time = f"{randint(9, 17)}:{randint(0, 59):02d}"
 
     path, cost = astar(
         graph=graph,
@@ -108,6 +110,7 @@ def main():
         node_positions=positions,
         drone=drones[0],
         no_fly_zones=noflyzones,
+        current_time=current_time  # ✅ Zaman kontrolü için eklendi
     )
 
     try:

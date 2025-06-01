@@ -13,11 +13,9 @@ from utils.constants import (
     FITNESS_VIOLATION_PENALTY,
 )
 
-# 🚀 Öklidyen mesafe
 def euclidean(p1, p2):
     return math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
 
-# 1️⃣ Popülasyonu başlat
 def initialize_population(drones, deliveries, pop_size):
     population = []
     for _ in range(pop_size):
@@ -42,7 +40,6 @@ def initialize_population(drones, deliveries, pop_size):
         population.append(individual)
     return population
 
-# 2️⃣ Fitness hesaplama
 def evaluate(individual, drones, deliveries, graph, positions, noflyzones):
     total_score = 0
     visited_deliveries = set()
@@ -50,18 +47,21 @@ def evaluate(individual, drones, deliveries, graph, positions, noflyzones):
     penalty_count = 0
     valid_count = 0
 
+    # Her drone için şarj takibi başlat
+    for drone in drones:
+        drone["next_available_time"] = 0  # dakika cinsinden kullanılabilirlik süresi
+
     for drone_id, delivery_ids in individual.items():
         drone = next(d for d in drones if d['id'] == drone_id)
         current_pos = drone['start_pos']
         battery = drone['battery']
         speed = drone['speed']
-        current_time = 13.00
+        current_time = 13.00  # saat cinsinden başlangıç zamanı
 
-        # 🔸 Min-Heap ile önceliklendirme
         heap = []
         for d_id in delivery_ids:
             priority = next(d['priority'] for d in deliveries if d['id'] == d_id)
-            heapq.heappush(heap, (-priority, d_id))  # büyük öncelik → daha acil
+            heapq.heappush(heap, (-priority, d_id))
 
         delivery_ids = [heapq.heappop(heap)[1] for _ in range(len(heap))]
 
@@ -82,19 +82,21 @@ def evaluate(individual, drones, deliveries, graph, positions, noflyzones):
             }
             temp_positions = {0: current_pos, 1: delivery['pos']}
 
-            path, cost = astar(temp_graph, 0, 1, temp_positions, drone, noflyzones)
+            # Şu anki zamanı drone'un hazır olma süresine göre güncelle
+            current_time = max(current_time, drone.get("next_available_time", 0))
+
+            path, cost = astar(temp_graph, 0, 1, temp_positions, drone, noflyzones, current_time)
 
             if not path:
                 total_score -= PENALTY_NO_ROUTE
                 penalty_count += 1
                 continue
 
-            # 🔋 Batarya yetmiyorsa şarj et ve süre ekle
             if battery < cost:
-                current_time += CHARGE_TIME_HOURS  # ⏱️ şarj süresi ekleniyor
-                battery = drone['battery']         # 🔋 batarya yeniden doluyor
+                current_time += CHARGE_TIME_HOURS
+                battery = drone['battery']
+                drone["next_available_time"] = current_time  # drone şarjdayken bekleyecek
 
-            # ⏰ Tahmini varış saati (ETA)
             arrival_time = current_time + (cost / speed)
             total_minutes = int(arrival_time * 60)
             hours = (total_minutes // 60) % 24
@@ -124,15 +126,11 @@ def evaluate(individual, drones, deliveries, graph, positions, noflyzones):
 
     return fitness
 
-
-
-# 3️⃣ Seçim
 def selection(population, scores, num_parents):
     paired = list(zip(scores, population))
     paired.sort(reverse=True, key=lambda x: x[0])
     return [p[1] for p in paired[:num_parents]]
 
-# 4️⃣ Çaprazlama
 def crossover(p1, p2):
     child = {}
     all_assigned = set()
@@ -144,7 +142,6 @@ def crossover(p1, p2):
         all_assigned.update(filtered)
     return child
 
-# 5️⃣ Mutasyon
 def mutate(individual, deliveries):
     new_individual = {k: v.copy() for k, v in individual.items()}
     all_deliv_ids = set(d['id'] for d in deliveries)
@@ -163,8 +160,10 @@ def mutate(individual, deliveries):
         new_individual[drone_id][replace_idx] = new_id
     return new_individual
 
-# 🔁 GA döngüsü
 def run_ga(drones, deliveries, graph, positions, noflyzones, gen=10, pop_size=10):
+    for drone in drones:
+        drone["next_available_time"] = 0  # ⏱️ şarj takibi için başlat
+
     population = initialize_population(drones, deliveries, pop_size)
     history = []
 

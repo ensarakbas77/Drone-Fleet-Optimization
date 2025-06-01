@@ -31,7 +31,7 @@ def plot_delivery_routes(drones, deliveries, paths, noflyzones=None):
             poly = Polygon(zone['coordinates'], closed=True, color='salmon', alpha=0.25, zorder=1)
             ax.add_patch(poly)
 
-    # 3️⃣ Drone rotaları
+    # 3️⃣ Drone rotalari ve toplam mesafe etiketi
     color_map = cm.get_cmap('tab10')
     for i, drone in enumerate(drones):
         drone_id = drone['id']
@@ -39,16 +39,16 @@ def plot_delivery_routes(drones, deliveries, paths, noflyzones=None):
         assigned_ids = paths.get(drone_id, [])
         start = drone['start_pos']
 
-        # Başlangıç karesi
+        # Baslangic karesi
         plt.plot(start[0], start[1], marker='s', markersize=10, color=color, label=f"Drone {drone_id}", zorder=4)
 
-        # Rota oluştur
+        # Rota olustur
         route = [start]
         for deliv_id in assigned_ids:
             delivery = next(d for d in deliveries if d["id"] == deliv_id)
             route.append(delivery["pos"])
 
-        # Rota çizimi
+        # Rota cizimi + toplam mesafe hesaplama
         total_distance = 0
         for j in range(len(route) - 1):
             x1, y1 = route[j]
@@ -61,10 +61,10 @@ def plot_delivery_routes(drones, deliveries, paths, noflyzones=None):
         if len(route) > 1:
             x_end, y_end = route[-1]
             plt.text(x_end + 2, y_end + 2,
-                     f"Toplam: {round(total_distance, 1)}", fontsize=8, color=color)
+                     f"Toplam: {round(total_distance, 1)}", fontsize=9, fontweight='bold', color=color)
 
-    # 4️⃣ Grafik ayarları
-    plt.title("Drone Teslimat Rotaları", fontsize=14)
+    # 4️⃣ Grafik ayarlari
+    plt.title("Drone Teslimat Rotalari", fontsize=14)
     plt.xlabel("X")
     plt.ylabel("Y")
     plt.grid(True, linestyle='--', alpha=0.4)
