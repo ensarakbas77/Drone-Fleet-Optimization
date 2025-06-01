@@ -31,6 +31,7 @@ Bu proje, Yazılım Geliştirme Lab II dersi kapsamında geliştirilmiştir. Ama
 
 2. Gerekli Python kütüphanelerini yükleyin: <br>
 `pip install matplotlib` <br>
+`pip install folium` <br>
 
 3. Çalıştırma <br>
 `python main.py`
