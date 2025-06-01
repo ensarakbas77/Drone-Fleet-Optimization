@@ -1,5 +1,5 @@
-{"id": 0, "max_weight": 7.05, "battery": 9120, "speed": 11.89, "start_pos": [24.173439311834866, 33.62412064328405]}
-{"id": 1, "max_weight": 3.17, "battery": 5872, "speed": 14.2, "start_pos": [56.23991545872493, 31.33445709548539]}
-{"id": 2, "max_weight": 5.79, "battery": 8683, "speed": 13.19, "start_pos": [45.39278268642363, 37.83205173183234]}
-{"id": 3, "max_weight": 8.85, "battery": 9277, "speed": 15.58, "start_pos": [66.71881918784459, 39.15603948097621]}
-{"id": 4, "max_weight": 3.92, "battery": 4078, "speed": 9.32, "start_pos": [72.16108327742351, 50.693635570244844]}
+{"id": 0, "max_weight": 5.0, "battery": 12000, "speed": 10.0, "start_pos": [29.9170, 40.7665]}
+{"id": 1, "max_weight": 4.0, "battery": 11000, "speed": 9.0, "start_pos": [29.9185, 40.7680]}
+{"id": 2, "max_weight": 6.0, "battery": 13000, "speed": 11.0, "start_pos": [29.9195, 40.7645]}
+{"id": 3, "max_weight": 5.5, "battery": 10000, "speed": 10.5, "start_pos": [29.9162, 40.7650]}
+{"id": 4, "max_weight": 4.8, "battery": 9500, "speed": 9.5, "start_pos": [29.9150, 40.7668]}

@@ -93,46 +93,45 @@ def point_inside_polygon(point, polygon):
     return inside
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    drone = {'id': 0, 'max_weight': 5.0, 'battery': 300}
-    delivery = {'id': 1, 'pos': (10, 20), 'weight': 3.0, 'priority': 2, 'time_window': ['12:00', '14:00']}
-    graph = {
-    0: {
-        1: {'distance': 150, 'weight': 0.2}
-    },
-    }
+    # drone = {'id': 0, 'max_weight': 5.0, 'battery': 300}
+    # delivery = {'id': 1, 'pos': (10, 20), 'weight': 3.0, 'priority': 2, 'time_window': ['12:00', '14:00']}
+    # graph = {
+    # 0: {
+    #     1: {'distance': 150, 'weight': 0.2}
+    # },
+    # }
  
-    path = [0, 1]
-    noflyzones = [
-    {
-        'id': 0,
-        'coordinates': [(50, 50), (60, 50), (60, 60), (50, 60)],
-        'active_time': ['12:00', '14:00']
-    }
-    ]
-    path_coords = [(0, 0), (10, 20)]
-    arrival_time = "13:00"
+    # path = [0, 1]
+    # noflyzones = [
+    # {
+    #     'id': 0,
+    #     'coordinates': [(50, 50), (60, 50), (60, 60), (50, 60)],
+    #     'active_time': ['12:00', '14:00']
+    # }
+    # ]
+    # path_coords = [(0, 0), (10, 20)]
+    # arrival_time = "13:00"
 
 
     # Rota koordinatları
-    path_coords = [ (0, 0), (10, 20) ]  
+    # path_coords = [ (0, 0), (10, 20) ]  
 
-    valid_battery = check_battery(drone, path, graph)
-    valid_weight = check_weight(drone, delivery)
-    valid_time = check_time_window(delivery, arrival_time)
-    valid_flight = check_nofly_zones(path_coords, noflyzones, arrival_time)
+    # valid_battery = check_battery(drone, path, graph)
+    # valid_weight = check_weight(drone, delivery)
+    # valid_time = check_time_window(delivery, arrival_time)
+    # valid_flight = check_nofly_zones(path_coords, noflyzones, arrival_time)
 
-    if valid_battery and valid_weight and valid_time and valid_flight:
-        print("✅ Rota geçerli.")
-    else:
-        print("❌ Rota reddedildi.")
-        if not valid_battery:
-            print("❌ Batarya yetersiz.")
-        if not valid_weight:
-            print("❌ Taşınan yük drone kapasitesini aşıyor.")
-        if not valid_time:
-            print("❌ Teslimat zaman aralığı dışında.")
-        if not valid_flight:
-            print("❌ Rota no-fly zone içinden geçiyor.")
-
+    # if valid_battery and valid_weight and valid_time and valid_flight:
+    #     print("✅ Rota geçerli.")
+    # else:
+    #     print("❌ Rota reddedildi.")
+    #     if not valid_battery:
+    #         print("❌ Batarya yetersiz.")
+    #     if not valid_weight:
+    #         print("❌ Taşınan yük drone kapasitesini aşıyor.")
+    #     if not valid_time:
+    #         print("❌ Teslimat zaman aralığı dışında.")
+    #     if not valid_flight:
+    #         print("❌ Rota no-fly zone içinden geçiyor.")
