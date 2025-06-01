@@ -1,3 +1,4 @@
+import heapq
 import random
 import math
 from project.csp import check_battery, check_weight, check_nofly_zones, check_time_window
@@ -56,13 +57,14 @@ def evaluate(individual, drones, deliveries, graph, positions, noflyzones):
         speed = drone['speed']
         current_time = 13.00
 
-        delivery_ids = sorted(
-            delivery_ids,
-            key=lambda d_id: next(d['priority'] for d in deliveries if d['id'] == d_id),
-            reverse=True
-        )
+        # 🔸 Min-Heap ile önceliklendirme
+        heap = []
+        for d_id in delivery_ids:
+            priority = next(d['priority'] for d in deliveries if d['id'] == d_id)
+            heapq.heappush(heap, (-priority, d_id))  # büyük öncelik → daha acil
 
-        #Teslimat yalnızca bir kez bir drone tarafından alınır.
+        delivery_ids = [heapq.heappop(heap)[1] for _ in range(len(heap))]
+
         for deliv_id in delivery_ids:
             if deliv_id in visited_deliveries:
                 continue
@@ -87,10 +89,12 @@ def evaluate(individual, drones, deliveries, graph, positions, noflyzones):
                 penalty_count += 1
                 continue
 
+            # 🔋 Batarya yetmiyorsa şarj et ve süre ekle
             if battery < cost:
-                current_time += CHARGE_TIME_HOURS
-                battery = drone['battery']
+                current_time += CHARGE_TIME_HOURS  # ⏱️ şarj süresi ekleniyor
+                battery = drone['battery']         # 🔋 batarya yeniden doluyor
 
+            # ⏰ Tahmini varış saati (ETA)
             arrival_time = current_time + (cost / speed)
             total_minutes = int(arrival_time * 60)
             hours = (total_minutes // 60) % 24
@@ -119,6 +123,8 @@ def evaluate(individual, drones, deliveries, graph, positions, noflyzones):
         - (penalty_count * FITNESS_VIOLATION_PENALTY)
 
     return fitness
+
+
 
 # 3️⃣ Seçim
 def selection(population, scores, num_parents):
