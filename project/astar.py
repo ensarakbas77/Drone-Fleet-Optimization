@@ -18,12 +18,12 @@ def calculate_cost(distance, weight, priority):
     priority_penalty = (MAX_PRIORITY_VALUE + 1 - priority) * PRIORITY_PENALTY_MULTIPLIER
     return base_cost + priority_penalty
 
-# 🔁 Zaman verisini dakikaya çevir (string veya int kabul eder)
+# Zaman verisini dakikaya çevir 
 def parse_time_value(val):
     if isinstance(val, int):
         return val
     elif isinstance(val, float):
-        return int(val * 60)  # saat olarak gelen float → dakikaya çevir
+        return int(val * 60)  
     elif isinstance(val, str):
         t = datetime.strptime(val, "%H:%M").time()
         return t.hour * 60 + t.minute
@@ -31,7 +31,7 @@ def parse_time_value(val):
         raise ValueError("Geçersiz zaman formatı")
 
 
-# 🔧 Evrensel zaman kontrolü entegre edilmiş no-fly zone kontrolü
+# Evrensel zaman kontrolü entegre edilmiş no-fly zone kontrolü
 def intersects_no_fly_zone(start, end, zones, current_time=None):
     path_line = LineString([start, end])
 

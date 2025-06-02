@@ -49,14 +49,14 @@ def evaluate(individual, drones, deliveries, graph, positions, noflyzones):
 
     # Her drone için şarj takibi başlat
     for drone in drones:
-        drone["next_available_time"] = 0  # dakika cinsinden kullanılabilirlik süresi
+        drone["next_available_time"] = 0  
 
     for drone_id, delivery_ids in individual.items():
         drone = next(d for d in drones if d['id'] == drone_id)
         current_pos = drone['start_pos']
         battery = drone['battery']
         speed = drone['speed']
-        current_time = 13.00  # saat cinsinden başlangıç zamanı
+        current_time = 13.00  
 
         heap = []
         for d_id in delivery_ids:
@@ -95,7 +95,7 @@ def evaluate(individual, drones, deliveries, graph, positions, noflyzones):
             if battery < cost:
                 current_time += CHARGE_TIME_HOURS
                 battery = drone['battery']
-                drone["next_available_time"] = current_time  # drone şarjdayken bekleyecek
+                drone["next_available_time"] = current_time  
 
             arrival_time = current_time + (cost / speed)
             total_minutes = int(arrival_time * 60)
@@ -162,7 +162,7 @@ def mutate(individual, deliveries):
 
 def run_ga(drones, deliveries, graph, positions, noflyzones, gen=10, pop_size=10):
     for drone in drones:
-        drone["next_available_time"] = 0  # ⏱️ şarj takibi için başlat
+        drone["next_available_time"] = 0 
 
     population = initialize_population(drones, deliveries, pop_size)
     history = []

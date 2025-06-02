@@ -39,7 +39,7 @@ def plot_routes_with_folium(drones, deliveries, solution, noflyzones, save_path=
         color = COLORS[idx % len(COLORS)]
 
         points = [drone["start_pos"]] + [next(d["pos"] for d in deliveries if d["id"] == did) for did in delivery_ids]
-        path = [(p[1], p[0]) for p in points]  # (lat, lon)
+        path = [(p[1], p[0]) for p in points] 
 
         folium.Marker(
             location=path[0],
@@ -55,7 +55,7 @@ def plot_routes_with_folium(drones, deliveries, solution, noflyzones, save_path=
             popup=f"Drone {drone_id} rotası"
         ).add_to(m)
 
-        # ✅ Toplam mesafe hesapla ve son noktaya etiketle
+        # Toplam mesafe hesapla ve son noktaya etiketle
         total_distance = 0
         for i in range(len(points) - 1):
             total_distance += euclidean(points[i], points[i+1])
@@ -71,4 +71,4 @@ def plot_routes_with_folium(drones, deliveries, solution, noflyzones, save_path=
             ).add_to(m)
 
     m.save(save_path)
-    print(f"📍 Harita oluşturuldu: {save_path}")
+    print(f" Harita oluşturuldu: {save_path}")

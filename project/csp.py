@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 def euclidean(p1, p2):
     return math.sqrt((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2)
 
-# 1. Batarya kontrolü: drone bataryası bu rotayı uçmaya yeter mi?
+# 1. Batarya kontrolü
 def check_battery(drone, path, graph):
     total_cost = 0
     for i in range(len(path) - 1):
@@ -19,18 +19,17 @@ def check_battery(drone, path, graph):
         total_cost += edge['distance'] * (1 + edge['weight'])  
     return total_cost <= drone['battery']
 
-#  2. Ağırlık kontrolü: drone paketi taşıyabilir mi?
+#  2. Ağırlık kontrolü
 def check_weight(drone, delivery):
     return delivery['weight'] <= drone['max_weight']
 
-# 3. Zaman aralığı kontrolü: teslimat istenen saat aralığında mı?
+# 3. Zaman aralığı kontrolü
 def check_time_window(delivery, arrival_time_str):
     fmt = "%H:%M"
     arrival = datetime.strptime(arrival_time_str, fmt)
 
     start_raw, end_raw = delivery['time_window']
 
-    # Eğer zamanlar string ise doğrudan parse et
     if isinstance(start_raw, str) and isinstance(end_raw, str):
         start = datetime.strptime(start_raw, fmt)
         end = datetime.strptime(end_raw, fmt)
@@ -43,7 +42,7 @@ def check_time_window(delivery, arrival_time_str):
     return start <= arrival <= end
 
 
-# 4. No-Fly Zone kontrolü: rota aktif bir yasak alandan geçiyor mu?
+# 4. No-Fly Zone kontrolü
 def check_nofly_zones(path_coords, noflyzones, arrival_time_str):
     fmt = "%H:%M"
     arrival = datetime.strptime(arrival_time_str, fmt)
@@ -64,17 +63,16 @@ def check_nofly_zones(path_coords, noflyzones, arrival_time_str):
 
         if z_start <= arrival <= z_end:
             if intersects_zone(path_coords, zone['coordinates']):
-                return False  # yasak bölgeye giriyor
+                return False  
     return True
 
-# Basit poligon içi kontrol fonksiyonu (yaklaşık)
+# Basit poligon içi kontrol fonksiyonu
 def intersects_zone(path_coords, polygon_coords):
     for point in path_coords:
         if point_inside_polygon(point, polygon_coords):
             return True
     return False
 
-# Nokta poligon içinde mi? (Ray casting algoritması)
 def point_inside_polygon(point, polygon):
     x, y = point
     inside = False

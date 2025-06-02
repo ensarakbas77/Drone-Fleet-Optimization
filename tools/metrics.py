@@ -26,7 +26,7 @@ def estimate_energy(best_solution, drones, deliveries):
         for deliv_id in assigned:
             next_pos = delivery_lookup[deliv_id]
             dist = euclidean(pos, next_pos)
-            energy = dist * (1 + 1.0)  # basit model: ağırlık = 1.0
+            energy = dist * (1 + 1.0)  
             total_energy += energy
             pos = next_pos
     avg_energy = total_energy / len(drones) if drones else 0

@@ -14,7 +14,7 @@ def plot_delivery_routes(drones, deliveries, paths, noflyzones=None):
     for dlist in paths.values():
         all_assigned_ids.update(dlist)
 
-    # 1️⃣ Teslimat noktaları
+    # Teslimat noktaları
     for dp in deliveries:
         x, y = dp["pos"]
         if dp["id"] in all_assigned_ids:
@@ -25,13 +25,13 @@ def plot_delivery_routes(drones, deliveries, paths, noflyzones=None):
             continue
         plt.text(x + 1.0, y + 1.0, f"{dp['id']}", fontsize=8, color='black')
 
-    # 2️⃣ No-fly zones
+    # No-fly zones
     if noflyzones:
         for zone in noflyzones:
             poly = Polygon(zone['coordinates'], closed=True, color='salmon', alpha=0.25, zorder=1)
             ax.add_patch(poly)
 
-    # 3️⃣ Drone rotalari ve toplam mesafe etiketi
+    # Drone rotalari ve toplam mesafe etiketi
     color_map = cm.get_cmap('tab10')
     for i, drone in enumerate(drones):
         drone_id = drone['id']
@@ -63,7 +63,7 @@ def plot_delivery_routes(drones, deliveries, paths, noflyzones=None):
             plt.text(x_end + 2, y_end + 2,
                      f"Toplam: {round(total_distance, 1)}", fontsize=9, fontweight='bold', color=color)
 
-    # 4️⃣ Grafik ayarlari
+    # Grafik ayarlari
     plt.title("Drone Teslimat Rotalari", fontsize=14)
     plt.xlabel("X")
     plt.ylabel("Y")

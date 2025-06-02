@@ -36,13 +36,13 @@ def display_top_priority_deliveries(deliveries, drones=None, count=None):
     if count is None:
         count = len(drones) if drones else 5
     heap = create_priority_heap(deliveries)
-    print("\n🔥 En Acil Teslimatlar (Öncelik Değerine Göre):")
+    print("\nEn Acil Teslimatlar (Öncelik Değerine Göre):")
     for _ in range(min(count, len(heap))):
         _, _, delivery = heapq.heappop(heap)
         print(f"  Teslimat {delivery['id']} → Öncelik: {delivery['priority']}")
 
 def main():
-    senaryo = "veriseti" #veriseti, senaryo2 ile değiştirilebilir.
+    senaryo = "veriseti" 
     print(f"\n🚀 Drone Teslimat Planlayıcı başlatıldı → {senaryo}")
 
     drones = load_json_lines(f"data/drones_{senaryo}.txt")
@@ -56,16 +56,16 @@ def main():
 
     graph = build_graph(deliveries)
 
-    # 🔥 Öncelikli teslimatların gösterimi
+    # Öncelikli teslimatların gösterimi
     display_top_priority_deliveries(deliveries, drones=drones)
 
     (best_solution, best_score, history), duration = measure_runtime(
         run_ga, drones, deliveries, graph, positions, noflyzones, gen=10, pop_size=8
     )
 
-    print("\n🧬 En iyi plan:")
+    print("\nEn iyi plan:")
     for drone_id, delivery_ids in best_solution.items():
-        print(f"\n🚁 Drone {drone_id} → Teslimatlar: {delivery_ids}")
+        print(f"\nDrone {drone_id} → Teslimatlar: {delivery_ids}")
         drone = next(d for d in drones if d["id"] == drone_id)
         current_pos = drone["start_pos"]
         battery = drone["battery"]
@@ -82,11 +82,11 @@ def main():
             battery -= cost
             current_pos = delivery["pos"]
 
-        print(f"   🔋 Batarya: {round(battery, 2)} / {total_battery}")
-        print(f"   💸 Toplam Maliyet: {round(total_cost, 2)}")
+        print(f"   Batarya: {round(battery, 2)} / {total_battery}")
+        print(f"   Toplam Maliyet: {round(total_cost, 2)}")
 
-    print(f"\n📊 En iyi skor: {round(best_score, 2)}")
-    print(f"⏱️ GA çalışma süresi: {duration:.2f} saniye")
+    print(f"\nEn iyi skor: {round(best_score, 2)}")
+    print(f"GA çalışma süresi: {duration:.2f} saniye")
 
     completion_rate = calculate_delivery_completion(best_solution, len(deliveries))
     avg_energy = estimate_energy(best_solution, drones, deliveries)
@@ -110,13 +110,13 @@ def main():
         node_positions=positions,
         drone=drones[0],
         no_fly_zones=noflyzones,
-        current_time=current_time  # ✅ Zaman kontrolü için eklendi
+        current_time=current_time  
     )
 
     try:
         plot_routes_with_folium(drones, deliveries, best_solution, noflyzones)
     except Exception as e:
-        print("🌐 Folium haritası oluşturulamadı:", e)
+        print("Folium haritası oluşturulamadı:", e)
 
     print("\n=== A* (tekli teslimat) testi ===")
     if path:
@@ -132,7 +132,7 @@ def main():
         print(f"ETA       : {eta_hour:02d}:{eta_min:02d}")
         print(f"Batarya   : {round(drone['battery'] - cost, 1)} / {drone['battery']} mAh")
     else:
-        print("❌ A* algoritması uygun rota bulamadı.")
+        print("A* algoritması uygun rota bulamadı.")
 
 if __name__ == "__main__":
     main()

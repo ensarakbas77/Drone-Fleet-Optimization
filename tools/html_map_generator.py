@@ -49,4 +49,4 @@ def plot_folium_map(drones, deliveries, solution, noflyzones, filename="drone_ro
         ).add_to(m)
 
     m.save(filename)
-    print(f"✅ Harita oluşturuldu: {filename}")
+    print(f"Harita oluşturuldu: {filename}")
